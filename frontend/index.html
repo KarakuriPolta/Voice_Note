@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Assistant</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Call Assistant</h1>
+        </header>
+        <main>
+            <div class="transcription-area">
+                <h2>文字起こし</h2>
+                <div id="transcriptionArea" class="transcript"></div>
+            </div>
+            <div class="controls">
+                <button id="startButton">通話開始</button>
+                <button id="stopButton" disabled>通話終了</button>
+                <button id="summarizeButton" disabled>要約</button>
+                <button id="settingsButton">設定</button>
+            </div>
+            <div class="audio-level-indicator">
+                <h2>音声レベル</h2>
+                <div id="audioLevel"></div>
+            </div>
+            <div class="summary-area">
+                <h2>要約</h2>
+                <div id="summaryArea" class="summary"></div>
+            </div>
+            <div class="status">
+                <p id="statusMessage">準備完了</p>
+            </div>
+        </main>
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>設定</h2>
+                <div class="settings-form">
+                    <div>
+                        <label for="speechApiKey">文字起こし APIキー:</label>
+                        <input type="text" id="speechApiKey" placeholder="APIキーを入力">
+                    </div>
+                    <div>
+                        <label for="summaryApiKey">要約 APIキー:</label>
+                        <input type="text" id="summaryApiKey" placeholder="APIキーを入力">
+                    </div>
+                    <div>
+                        <label for="language">言語:</label>
+                        <select id="language">
+                            <option value="ja-JP">日本語</option>
+                            <option value="en-US">英語</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="microphone">マイク:</label>
+                        <select id="microphone">
+                            <option value="">既定のマイク</option>
+                        </select>
+                    </div>
+                    <button id="saveSettings">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

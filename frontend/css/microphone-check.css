@@ -1,0 +1,15 @@
+/* call-assistant/frontend/css/microphone-check.css */
+.microphone-selector {
+    margin-bottom: 15px;
+}
+
+.microphone-selector label {
+    display: inline-block;
+    width: 60px;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.microphone-selector select {
+    width: 200px;
+}

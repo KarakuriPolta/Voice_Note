@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイク入力チェック</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/microphone-check.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>マイク入力チェック</h1>
+        </header>
+        <main>
+            <div class="microphone-selector">
+                <label for="microphone">マイク:</label>
+                <select id="microphone">
+                    <option value="">既定のマイク</option>
+                </select>
+            </div>
+            <div class="microphone-level-container">
+                <h2>音声レベル</h2>
+                <div id="audioLevel"></div>
+            </div>
+            <p><a href="./">メインページに戻る</a></p>
+        </main>
+    </div>
+    <script src="js/microphone-check.js"></script>
+</body>
+</html>
