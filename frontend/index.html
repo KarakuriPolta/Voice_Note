@@ -40,12 +40,12 @@
                 <h2>設定</h2>
                 <div class="settings-form">
                     <div>
-                        <label for="speechApiKey">文字起こし APIキー:</label>
-                        <input type="text" id="speechApiKey" placeholder="APIキーを入力">
-                    </div>
-                    <div>
-                        <label for="summaryApiKey">要約 APIキー:</label>
-                        <input type="text" id="summaryApiKey" placeholder="APIキーを入力">
+                        <label for="apiSelect">文字起こしAPI選択:</label>
+                        <select id="apiSelect">
+                            <option value="webkitSpeechRecognition">webkitSpeechRecognition</option>
+                            <option value="GoogleCloudSpeechToText">Google Cloud Speech-to-Text</option>
+                        </select>
+                        <p id="apiDescription">ブラウザー上で無料で使用できる webkitSpeechRecognition API を使用して音声認識を行います。利用できるブラウザーが限られる、端末の既定のマイクしか使用できない、音声認識の精度が低いなどの制約があります。</p>
                     </div>
                     <div>
                         <label for="language">言語:</label>
@@ -59,6 +59,11 @@
                         <select id="microphone">
                             <option value="">既定のマイク</option>
                         </select>
+                    </div>
+                    <div>
+                        <label for="summaryInstructionArea">要約の追加指示:</label>
+                        <textarea id="summaryInstructionArea" rows="4" cols="50" placeholder="要約時に追加の指定を行うことができます。要約のスタイルの指示の上書きや、情報の指示などを実行できます。
+例：「箇条書きでなく、500字程度の平文で要約すること。」「時系列順でなく、内容で分類して見出しをつけながら要約する。」「〇〇は□□である。」など"></textarea>
                     </div>
                     <button id="saveSettings">保存</button>
                 </div>

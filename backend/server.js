@@ -2,17 +2,22 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const path = require('path'); // path モジュールを追加
+const path = require('path');
+const fs = require('fs');
+const { v1p1beta1 } = require('@google-cloud/speech');
+const WebSocket = require('ws');
+
 const app = express();
 const port = 3000;
 
+// Google Cloud Speech-to-Text クライアント
+const speechClient = new v1p1beta1.SpeechClient();
+
 app.use(cors());
 app.use(express.json());
-
-// フロントエンドの静的ファイルを配信
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// ルートパス('/') にアクセスがあったら index.html を送信
+// ルートパス ('/') にアクセスがあったら index.html を送信
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
@@ -22,20 +27,27 @@ app.get('/microphone-check', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/microphone-check.html'));
 });
 
-
 // Gemini API クライアントを初期化
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-app.post('/backend/summarize', async (req, res) => {
+app.post('/api/summarize', async (req, res) => {
     const transcript = req.body.transcript;
+    const instruction = req.body.instruction;
     console.log('Gemini 要約リクエストを受信:', transcript);
+    if(instruction){
+        console.log('追加の指定:', instruction);
+    }
 
     if (!transcript) {
         return res.status(400).json({ error: '要約するテキストがありません。' });
     }
 
-    const prompt = `以下のテキストを要約してください。\n\n${transcript}`;
+    let prompt = '音声を文字起こししたテキストを要約してください。デフォルトの指定は以下のとおりです。\n箇条書きで出力する。また、出力は要約後の文のみにする。\n\n';
+    if (instruction) {
+        prompt += '以下は追加の指定です。デフォルトの指定と競合する場合、追加の指定を優先してください。\n' + instruction + '\n\n';
+    }
+    prompt += '以降がテキスト本文です。要約してください。' + transcript;
 
     try {
         const result = await model.generateContent([prompt]);
@@ -54,6 +66,57 @@ app.post('/backend/summarize', async (req, res) => {
     }
 });
 
+// WebSocket サーバーを作成
+const wss = new WebSocket.Server({ port: 3001 });
+
+wss.on('connection', (ws) => {
+    console.log('WebSocket クライアントが接続しました');
+
+    // ストリーミング音声認識の設定
+    const request = {
+        config: {
+            encoding: 'WEBM_OPUS', // クライアント側と統一
+            sampleRateHertz: 16000,
+            languageCode: 'ja-JP',
+            enableAutomaticPunctuation: true,
+        },
+        interimResults: true, // 部分的な認識結果をリアルタイム送信
+    };
+
+    const recognizeStream = speechClient
+        .streamingRecognize(request)
+        .on('error', (error) => {
+            console.error('音声認識エラー:', error);
+            ws.send(JSON.stringify({ error: '音声認識エラーが発生しました' }));
+        })
+        .on('data', (data) => {
+            const transcript = data.results
+                .map((result) => result.alternatives[0].transcript)
+                .join('\n');
+
+            // 無音によるテキストリセットを検知
+            if (data.results[0].isFinal) {
+                ws.send(JSON.stringify({ reset: true }));
+            }else{
+                console.log('音声認識結果:', transcript);
+                ws.send(JSON.stringify({ transcript }));
+            }
+
+        });
+
+    // クライアントから音声データを受信
+    ws.on('message', (message) => {
+        recognizeStream.write(message);
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket 接続が終了しました');
+        recognizeStream.end();
+    });
+});
+
+// サーバーの起動
 app.listen(port, () => {
     console.log(`Backend server listening at http://localhost:${port}`);
+    console.log(`WebSocket server listening at ws://localhost:3001`);
 });

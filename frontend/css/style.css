@@ -74,11 +74,13 @@ main {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
@@ -151,4 +153,13 @@ main {
     height: 100%;
     background-color: #007bff;
     width: var(--level-width); /* 音声レベルに合わせて調整 */
+}
+
+#summaryInstructionArea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical; /* 縦方向のリサイズを許可 */
 }
