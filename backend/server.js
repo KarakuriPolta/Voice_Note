@@ -71,7 +71,10 @@ const wss = new WebSocket.Server({ port: 3001 });
 
 wss.on('connection', (ws) => {
     console.log('WebSocket クライアントが接続しました');
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, './google-credentials.json');
+    const isPackaged = process.env.ELECTRON_IS_PACKAGED === "1";
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = isPackaged 
+    ? path.join(process.resourcesPath, 'google-credentials.json')
+    : path.resolve(__dirname, './google-credentials.json');
 
     // ストリーミング音声認識の設定
     const request = {
@@ -88,7 +91,7 @@ wss.on('connection', (ws) => {
         .streamingRecognize(request)
         .on('error', (error) => {
             console.error('音声認識エラー:', error);
-            ws.send(JSON.stringify({ error: '音声認識エラーが発生しました' }));
+            ws.send(JSON.stringify({ error: '音声認識エラーが発生しました' + error.message }));
         })
         .on('data', (data) => {
             const transcript = data.results
