@@ -71,6 +71,7 @@ const wss = new WebSocket.Server({ port: 3001 });
 
 wss.on('connection', (ws) => {
     console.log('WebSocket クライアントが接続しました');
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, './google-credentials.json');
 
     // ストリーミング音声認識の設定
     const request = {
