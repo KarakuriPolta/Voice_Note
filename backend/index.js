@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, shell } = require("electron");
 const path = require("path");
 const url = require("url");
 
@@ -28,6 +28,13 @@ function createWindow() {
     // ウィンドウが閉じられたときの処理
     mainWindow.on("closed", function () {
         mainWindow = null;
+    });
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith('http')) {
+            shell.openExternal(url);
+        }
+        return { action: 'deny' };
     });
 }
 

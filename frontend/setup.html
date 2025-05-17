@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Assistant - セットアップ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Call Assistant - セットアップ方法</h1>
+        </header>
+        <ul>
+            <li><a target="_blank" href="https://console.cloud.google.com/">Google Cloud Platform</a> にサインインする
+                <ul>
+                    <li>Googleアカウントが必要です。</li>
+                    <li>初めての利用の場合には案内が表示されます。利用規約をお読みいただき、「同意して続行」を押してください。</li>
+                    <li>また、プロジェクトの利用には請求先アカウントが必要です。設定されていない場合には、画面上部の「無料で利用開始」を押し、登録してください。</li>
+                </ul>
+            </li>
+            <li>プロジェクトを作成する
+                <ul>
+                    <li>左上の「プロジェクトを選択」やプロジェクト名の書かれているボタンを押してください。<br>
+                        <img src="img/2-1.png" alt="プロジェクト選択ダイアログ"></li>
+                    <li>右上の「新しいプロジェクト」をクリックします。<br>
+                        <img src="img/2-2.png" alt="新しいプロジェクト"></li>
+                    <li>「Call-Assistant」など任意の名称を設定し作成を押します。<br>
+                        <img src="img/2-3.png" alt="プロジェクト作成"></li>
+                    <li>再び「プロジェクトを選択」を押し、先ほど作成したプロジェクトを選択します。<br>
+                        <img src="img/2-4.png" alt="プロジェクト選択"></li>
+                    <li>左上のボタンが先程作成したプロジェクト名になっていれば選択できています。<br>
+                        <img src="img/2-5.png" alt="プロジェクト選択確認"></li>
+                </ul>
+            </li>
+            <li>APIの有効化
+                <ul>
+                    <li>画面上部の検索バーに「Speech-to-Text」と入れて検索し、「Cloud Speech-to-Text API」をクリックします。 ※Cloud Text-to-Speech APIではありません。<br>
+                        <img src="img/3-1.png" alt="S2T検索"></li>
+                    <li>「有効にする」を押します。<br>
+                        <img src="img/3-2.png" alt="S2T有効化"></li>
+                    <li>同様に、「Gemini」で検索し、「Gemini API」を有効化します。<br>
+                        <img src="img/3-3.png" alt="Gemini検索"><br>
+                        <img src="img/3-4.png" alt="Gemini有効化"></li>
+                </ul>
+            </li>
+            <li>サービスアカウントを作成する
+                <ul>
+                    <li>左上メニュー→APIとサービス→認証情報を押してください。<br>
+                        <img src="img/4-1.png" alt="認証情報"></li>
+                    <li>
+                        サービスアカウントを管理をクリックしてください。<br>
+                        <img src="img/4-2.png" alt="サービスアカウント"></li>
+                    <li>
+                        サービスアカウントを作成をクリックしてください。<br>
+                        <img src="img/4-3.png" alt="サービスアカウント作成"></li>
+                    <li>
+                        適当な名前をつけたら、続行を押してください。<br>
+                        <img src="img/4-4.png" alt="サービスアカウント名"></li>
+                    <li>
+                        「役割を選択」から「基本」→「閲覧者」を選択し、完了を押します。<br>
+                        <img src="img/4-5.png" alt="サービスアカウント役割"></li>
+                </ul>
+            </li>
+            <li>サービスアカウントのJSONキーをダウンロードする
+                <ul>
+                    <li>
+                        再び左上メニュー→APIとサービス→認証情報を押してください。<br>
+                        <img src="img/4-1.png" alt="認証情報"></li>
+                    <li>
+                        サービスアカウントのアドレスを押します。<br>
+                        <img src="img/5-1.png" alt="サービスアカウント"></li>
+                    <li>
+                        「鍵」タブを選択し、「キーを追加」→「新しい鍵を作成」を押し、キーのタイプはJSONのまま作成してください。<br>
+                        <img src="img/5-2.png" alt="鍵タブ"><br>
+                        <img src="img/5-3.png" alt="新しい鍵を作成"><br>
+                        <img src="img/5-4.png" alt="JSONを選択"></li>
+                </ul>
+            </li>
+            <li>ダウンロードした JSON ファイルを指定の場所に配置する
+                <ul>
+                    <li>Call Assistant.exeが存在するフォルダを開き、resourcesフォルダを開いてください。</li>
+                    <li>先ほどダウンロードした鍵のJSONファイルを、「google-credentials.json」という名前で移動してください。</li>
+                </ul>
+            </li>
+        </ul>
+        <p>以上でセットアップは完了です。鍵を追加・変更した場合は、Call Assistantを再起動してください。</p>
+    </div>
+</body>

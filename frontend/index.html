@@ -40,19 +40,9 @@
                 <h2>設定</h2>
                 <div class="settings-form">
                     <div>
-                        <label for="apiSelect">文字起こしAPI選択:</label>
-                        <select id="apiSelect">
-                            <option value="webkitSpeechRecognition">webkitSpeechRecognition</option>
-                            <option value="GoogleCloudSpeechToText">Google Cloud Speech-to-Text</option>
-                        </select>
-                        <p id="apiDescription">ブラウザー上で無料で使用できる webkitSpeechRecognition API を使用して音声認識を行います。利用できるブラウザーが限られる、端末の既定のマイクしか使用できない、音声認識の精度が低いなどの制約があります。</p>
-                    </div>
-                    <div>
-                        <label for="language">言語:</label>
-                        <select id="language">
-                            <option value="ja-JP">日本語</option>
-                            <option value="en-US">英語</option>
-                        </select>
+                        <label for="summaryInstructionArea">要約の追加指示:</label>
+                        <textarea id="summaryInstructionArea" rows="4" cols="50" placeholder="要約時に追加の指定を行うことができます。要約のスタイルの指示の上書きや、情報の指示などを実行できます。
+例：「箇条書きでなく、500字程度の平文で要約すること。」「時系列順でなく、内容で分類して見出しをつけながら要約する。」「〇〇は□□である。」など"></textarea>
                     </div>
                     <div>
                         <label for="microphone">マイク:</label>
@@ -61,9 +51,11 @@
                         </select>
                     </div>
                     <div>
-                        <label for="summaryInstructionArea">要約の追加指示:</label>
-                        <textarea id="summaryInstructionArea" rows="4" cols="50" placeholder="要約時に追加の指定を行うことができます。要約のスタイルの指示の上書きや、情報の指示などを実行できます。
-例：「箇条書きでなく、500字程度の平文で要約すること。」「時系列順でなく、内容で分類して見出しをつけながら要約する。」「〇〇は□□である。」など"></textarea>
+                        <p id="apiDescription">
+                            Google Cloud Speech-to-Text API を使用して音声認識を行います。<br>
+                            Google Cloud Platform のプロジェクトとサービスアカウントが必要で、一定以上の利用で課金が発生します。<br>
+                            <a href="http://localhost:3000/setup.html" target="_blank" >セットアップ方法の詳細はこちら。</a>
+                        </p>
                     </div>
                     <button id="saveSettings">保存</button>
                 </div>
