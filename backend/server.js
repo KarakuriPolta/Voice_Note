@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+// const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { VertexAI } = require('@google-cloud/vertexai');
 const path = require('path');
 const fs = require('fs');
 const { v1p1beta1 } = require('@google-cloud/speech');
@@ -50,19 +51,27 @@ app.post('/api/summarize', async (req, res) => {
     prompt += '以降がテキスト本文です。要約してください。' + transcript;
 
     try {
-        const result = await model.generateContent([prompt]);
-        const response = await result.response;
+        // Vertex AI Generative Language API で推論
+        const request = {
+            contents: [{role: 'user', parts: [{text: prompt}]}],
+        };
+        console.log('Request: ', JSON.stringify(request));
+        const result = await generativeModel.generateContent(request);
+        const response = result.response;
+        
+        console.log('Response: ', JSON.stringify(response));
+
         const summary = response.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (summary) {
             res.json({ summary: summary });
         } else {
-            console.error('Gemini からの要約結果がありません:', response);
+            console.error('Vertex AI からの要約結果がありません:', result);
             res.status(500).json({ error: '要約に失敗しました。' });
         }
     } catch (error) {
-        console.error('Gemini API エラー:', error);
-        res.status(500).json({ error: 'Gemini APIとの通信中にエラーが発生しました: ' + error.message });
+        console.error('Vertex AI API エラー:', error);
+        res.status(500).json({ error: 'Vertex AI APIとの通信中にエラーが発生しました: ' + error.message });
     }
 });
 
