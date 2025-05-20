@@ -28,9 +28,28 @@ app.get('/microphone-check', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/microphone-check.html'));
 });
 
-// Gemini API クライアントを初期化
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+// Gemini API クライアントを初期化（Vertex AI経由）
+// 認証情報JSONは GOOGLE_APPLICATION_CREDENTIALS で指定
+if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    const isPackaged = process.env.ELECTRON_IS_PACKAGED === "1";
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = isPackaged
+        ? path.join(process.resourcesPath, 'google-credentials.json')
+        : path.resolve(__dirname, './google-credentials.json');
+    console.log('認証情報ファイル:', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+}
+
+// Vertex AIのクライアントを初期化
+const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+const serviceAccount = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
+
+const vertexAI = new VertexAI({
+    project: serviceAccount.project_id,
+    location: location,
+    googleAuthOptions: { credentials: serviceAccount },
+});
+const generativeModel = vertexAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-001' // Vertex AIのモデル名
+});
 
 app.post('/api/summarize', async (req, res) => {
     const transcript = req.body.transcript;

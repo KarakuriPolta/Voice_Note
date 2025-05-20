@@ -10,20 +10,20 @@
     "license": "ISC",
     "dependencies": {
         "@google-cloud/speech": "^7.0.0",
+        "@google-cloud/vertexai": "^1.10.0",
         "axios": "^1.6.7",
         "body-parser": "^2.2.0",
         "cors": "^2.8.5",
-        "dotenv": "^16.4.7",
+        "dotenv": "^16.5.0",
         "express": "^5.1.0",
         "ws": "^8.18.1"
     },
     "devDependencies": {
-        "@google-cloud/vertexai": "^1.10.0",
         "electron": "^36.2.1",
         "electron-builder": "^26.0.12"
     },
     "build": {
-        "appId": "com.polta.call-assistant",
+        "appId": "com.poltergeist-lab.call-assistant",
         "productName": "Call Assistant",
         "directories": {
             "output": "dist"
