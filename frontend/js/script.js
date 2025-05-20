@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioLevelDiv = document.getElementById('audioLevel');
     const apiDescription = document.getElementById('apiDescription');
     const summaryInstructionArea = document.getElementById('summaryInstructionArea');
+    const serviceAccountJsonInput = document.getElementById('serviceAccountJson');
+    const jsonUploadStatus = document.getElementById('jsonUploadStatus');
 
     let audioContext;
     let analyser;
@@ -250,6 +252,38 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryArea.textContent = '文字起こしテキストがありません。';
             statusMessage.textContent = '要約エラー';
         }
+    });
+
+    let uploadedServiceAccountJson = null;
+
+    serviceAccountJsonInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.type !== "application/json" && !file.name.endsWith('.json')) {
+            jsonUploadStatus.textContent = 'JSONファイルのみアップロード可能';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const json = JSON.parse(e.target.result);
+                uploadedServiceAccountJson = e.target.result;
+                // 通常Web
+                const res = await fetch('/api/upload-credentials', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: uploadedServiceAccountJson
+                });
+                if (res.ok) {
+                    jsonUploadStatus.textContent = 'アップロード完了';
+                } else {
+                    jsonUploadStatus.textContent = 'アップロード失敗';
+                }
+            } catch (err) {
+                jsonUploadStatus.textContent = 'JSONのパースに失敗';
+            }
+        };
+        reader.readAsText(file);
     });
 
     populateMicrophoneList();

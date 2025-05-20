@@ -51,8 +51,13 @@
                         </select>
                     </div>
                     <div>
+                        <label for="serviceAccountJson">サービスアカウント認証JSON:</label>
+                        <input type="file" id="serviceAccountJson" accept=".json">
+                        <span id="jsonUploadStatus"></span>
+                    </div>
+                    <div>
                         <p id="apiDescription">
-                            Google Cloud Speech-to-Text API を使用して音声認識を行います。<br>
+                            Google Cloud Speech-to-Text API を使用して音声認識を行い、Google Cloud Vertex AI APIを経由したGoogle Geminiで要約を行います。<br>
                             Google Cloud Platform のプロジェクトとサービスアカウントが必要で、一定以上の利用で課金が発生します。<br>
                             <a href="http://localhost:3000/setup.html" target="_blank" >セットアップ方法の詳細はこちら。</a>
                         </p>
