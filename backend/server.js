@@ -5,14 +5,14 @@ const cors = require('cors');
 const { VertexAI } = require('@google-cloud/vertexai');
 const path = require('path');
 const fs = require('fs');
-const { v1p1beta1 } = require('@google-cloud/speech');
+const speech = require('@google-cloud/speech');
 const WebSocket = require('ws');
 
 const app = express();
 const port = 3000;
 
 // Google Cloud Speech-to-Text クライアント
-const speechClient = new v1p1beta1.SpeechClient();
+const speechClient = new speech.SpeechClient();
 
 app.use(cors());
 app.use(express.json());
@@ -48,7 +48,7 @@ const vertexAI = new VertexAI({
     googleAuthOptions: { credentials: serviceAccount },
 });
 const generativeModel = vertexAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-001' // Vertex AIのモデル名
+    model: 'gemini-2.0-flash-lite-001' // Vertex AIのモデル名
 });
 
 app.post('/api/summarize', async (req, res) => {
