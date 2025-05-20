@@ -100,11 +100,10 @@ app.post('/api/summarize', async (req, res) => {
         return res.status(400).json({ error: '要約するテキストがありません。' });
     }
 
-    let prompt = '音声を文字起こししたテキストを要約してください。デフォルトの指定は以下のとおりです。\n箇条書きで出力する。また、出力は要約後の文のみにする。\n\n';
+    let prompt = 'userプロンプトは音声を文字起こししたテキストです。この文章を、元の文章と同じ言語で要約してください。デフォルトの指定は以下のとおりです。\n箇条書きで出力する。また、出力は要約後の文のみにする。\n\n';
     if (instruction) {
         prompt += '以下は追加の指定です。デフォルトの指定と競合する場合、追加の指定を優先してください。\n' + instruction + '\n\n';
     }
-    prompt += '以降がテキスト本文です。要約してください。' + transcript;
 
     try {
         // Vertex AI Generative Language API で推論
@@ -112,13 +111,18 @@ app.post('/api/summarize', async (req, res) => {
         try {
             vertexAI = getVertexAIClient();
             generativeModel = vertexAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-lite-001'
+                model: 'gemini-2.0-flash-lite-001',
+                systemInstruction: {
+                    parts: [
+                        {text: prompt}
+                    ],
+                },
             });
         } catch (e) {
             return res.status(500).json({ error: '認証情報ファイルが存在しません。設定画面からアップロードしてください。' });
         }
         const request = {
-            contents: [{role: 'user', parts: [{text: prompt}]}],
+            contents: [{role: 'user', parts: [{text: transcript}]}],
         };
         console.log('Request: ', JSON.stringify(request));
         const result = await generativeModel.generateContent(request);
