@@ -111,7 +111,7 @@ app.post('/api/summarize', async (req, res) => {
         try {
             vertexAI = getVertexAIClient();
             generativeModel = vertexAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-lite-001',
+                model: 'gemini-2.5-flash-lite',
                 systemInstruction: {
                     parts: [
                         {text: prompt}

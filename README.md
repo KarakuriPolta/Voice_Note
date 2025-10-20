@@ -24,7 +24,7 @@
 ## 注意事項
 
 * 文字起こしは Google Cloud Speech-to-Text API を使用して行われます。Google Cloud Platform のプロジェクトが必要で、一定以上の利用で課金が発生します。
-* 要約機能は Google Gemini API (モデル: gemini-2.0-flash) を利用します。
+* 要約機能は Google Gemini API (モデル: gemini-2.5-flash-lite) を利用します。
 * エラー処理やUIの改善は今後の課題です。
 * APIキーは安全に管理してください。
 

@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const serviceAccountJsonInput = document.getElementById('serviceAccountJson');
     const jsonUploadStatus = document.getElementById('jsonUploadStatus');
 
+    const transcriptCopyButton = document.getElementById('transcriptCopy');
+    const summaryCopyButton = document.getElementById('summaryCopy');
+
     let audioContext;
     let analyser;
     let microphoneStream;
@@ -156,13 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
         recordedChunks = [];
         await startMicrophone(selectedMicrophoneId);
         resetted = false;
+        transcribedBuffer = transcriptionArea.value;
         socket = new WebSocket('ws://localhost:3001');
         socket.onopen = () => {
             mediaRecorder.start(100); // 100msごとにデータを送信
             statusMessage.textContent = '録音中...';
             startButton.disabled = true;
             stopButton.disabled = false;
-            summarizeButton.disabled = true;
         };
         socket.onmessage = (event) => {
             console.log('WebSocketメッセージ:', event.data);
@@ -170,17 +173,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if(data.reset){
                 resetted = true;
                 transcribedBuffer += transcribedText + '\n';
-                transcriptionArea.textContent = transcribedBuffer;
+                transcriptionArea.value = transcribedBuffer.trim();
             }else if (data.transcript) {
                 // リセット後に全く同じ内容で送られることがある。その場合は無視する
                 if(transcribedText !== data.transcript){
                     resetted = false;
-                    transcriptionArea.textContent = transcribedBuffer + data.transcript;
+                    transcriptionArea.value = (transcribedBuffer + data.transcript).trim();
                     transcribedText = data.transcript;
                 }
             }
+            summarizeButton.disabled = (transcriptionArea.value.trim() === '');
         };
-        socket.onerror = (error) => {
+        socket.onerror = (error) => {resetted
             console.error('WebSocketエラー:', error);
             statusMessage.textContent = 'WebSocketエラーが発生しました。';
         };
@@ -199,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(transcribedText && !resetted){
             transcribedBuffer += transcribedText + '\n';
             transcribedText = '';
-            transcriptionArea.textContent = transcribedBuffer;
+            transcriptionArea.value = transcribedBuffer;
         }
         // マイクの受取を停止
         if (microphoneStream) {
@@ -217,14 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = '録音終了';
         startButton.disabled = false;
         stopButton.disabled = true;
-        summarizeButton.disabled = false;
     });
 
     summarizeButton.addEventListener('click', async () => {
+        transcribedBuffer = transcriptionArea.value;
         if (transcribedBuffer) {
             statusMessage.textContent = '要約処理中...';
             try {
-                let body = { transcript: transcribedBuffer };
+                let body = { transcript: transcriptionArea.value };
                 if(summarizeInstrustion && summarizeInstrustion !== ''){
                     body.instruction = summarizeInstrustion;
                 }
@@ -237,19 +241,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (data.summary) {
-                    summaryArea.textContent = data.summary;
+                    summaryArea.value = data.summary;
                     statusMessage.textContent = '要約完了';
                 } else if (data.error) {
-                    summaryArea.textContent = '要約に失敗しました: ' + data.error;
+                    summaryArea.value = '要約に失敗しました: ' + data.error;
                     statusMessage.textContent = '要約エラー';
                 }
             } catch (error) {
                 console.error('要約APIエラー:', error);
-                summaryArea.textContent = '要約に失敗しました。';
+                summaryArea.value = '要約に失敗しました。';
                 statusMessage.textContent = '要約エラー';
             }
         } else {
-            summaryArea.textContent = '文字起こしテキストがありません。';
+            summaryArea.value = '文字起こしテキストがありません。';
             statusMessage.textContent = '要約エラー';
         }
     });
@@ -284,6 +288,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
         reader.readAsText(file);
+    });
+
+    transcriptionArea.addEventListener('change', () => {
+            summarizeButton.disabled = (transcriptionArea.value.trim() === '');
+    });
+
+    // コピーボタンの処理
+    transcriptCopyButton.addEventListener('click', () => {
+        if (transcriptionArea.value) {
+            navigator.clipboard.writeText(transcriptionArea.value)
+                .then(() => {
+                    statusMessage.textContent = '文字起こし文をコピーしました。';
+                })
+                .catch(() => {
+                    statusMessage.textContent = 'コピーに失敗しました。';
+                });
+        } else {
+            statusMessage.textContent = '文字起こし文が空です。';
+        }
+    });
+
+    summaryCopyButton.addEventListener('click', () => {
+        if (summaryArea.value) {
+            navigator.clipboard.writeText(summaryArea.value)
+                .then(() => {
+                    statusMessage.textContent = '要約文をコピーしました。';
+                })
+                .catch(() => {
+                    statusMessage.textContent = 'コピーに失敗。';
+                });
+        } else {
+            statusMessage.textContent = '要約文が空です。';
+        }
     });
 
     populateMicrophoneList();
