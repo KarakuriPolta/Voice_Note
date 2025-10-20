@@ -1,35 +1,69 @@
-# Call Assistant (ブラウザ版)
 
-このプロジェクトは、通話対応を補助するソフトウェアのブラウザ版です。
+# Call Assistant (Electron版)
 
-## セットアップ
+通話内容の文字起こし・要約を支援するデスクトップアプリ（Electron製）
 
-1.  Node.jsがインストールされていることを確認してください。
-2.  プロジェクトをクローンまたはダウンロードします。
-3.  `call-assistant/backend` フォルダに移動し、以下のコマンドを実行して依存関係をインストールします。
-    ```bash
-    cd call-assistant/backend
-    npm install
-    ```
-4.  `call-assistant/backend` フォルダに `.env` ファイルを作成し、Gemini API のキーを設定します。
-    ```
-    GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-    ```
-5.  バックエンドサーバーを起動します。
-    ```bash
-    npm start
-    ```
-6.  ブラウザで `http://localhost:3000` にアクセスします。
+---
+
+## 機能概要
+
+- Google Cloud Speech-to-Text APIによるリアルタイム音声認識
+- Google Gemini (Vertex AI) APIによる要約生成
+- サービスアカウントJSONアップロード・設定画面
+- Windows向けインストーラ生成対応
+
+---
+
+## セットアップ・起動方法
+
+1. **Node.js v18以上**をインストール
+2. このリポジトリをクローン
+3. `backend` ディレクトリで依存関係をインストール
+   ```pwsh
+   cd backend
+   npm install
+   ```
+4. Google CloudのサービスアカウントJSONを `backend/google-credentials.json` に配置（またはアプリ設定画面からアップロード）
+5. Electronアプリを起動
+   ```pwsh
+   npm start
+   ```
+
+---
+
+## ビルド方法（Windows向けインストーラ作成）
+
+`backend` ディレクトリで以下を実行：
+
+```pwsh
+npx electron-builder
+```
+
+`dist/` フォルダに `Call Assistant Setup.exe` などのインストーラが生成される。
+
+---
+
+## 主要ディレクトリ構成
+
+- `backend/` ... Electron本体・Nodeサーバ・API
+- `frontend/` ... UI（HTML/JS/CSS）
+
+---
 
 ## 注意事項
 
-* 文字起こしは Google Cloud Speech-to-Text API を使用して行われます。Google Cloud Platform のプロジェクトが必要で、一定以上の利用で課金が発生します。
-* 要約機能は Google Gemini API (モデル: gemini-2.5-flash-lite) を利用します。
-* エラー処理やUIの改善は今後の課題です。
-* APIキーは安全に管理してください。
+- Google Cloud Speech-to-Text, Gemini APIの利用にはGCPプロジェクト・課金設定が必要
+- 利用料金はGoogle公式ドキュメントを参照
+- サービスアカウントJSONは厳重に管理すること
 
-## 今後の開発
+---
 
-* 設定画面の機能拡充（言語設定など）
-* UIの改善とレスポンシブ対応の強化
-* エラー処理の追加
+## 詳細なセットアップ手順
+
+Google CloudのAPI有効化・サービスアカウント作成手順は `frontend/setup.html` を参照
+
+---
+
+## ライセンス
+
+このソフトウェアはMITライセンスで提供されます。

@@ -1,7 +1,7 @@
 {
     "name": "call-assistant-backend",
     "version": "1.0.0",
-    "description": "Backend for Call Assistant",
+    "description": "Call Assistant (Electron版) バックエンド・Electron本体",
     "main": "index.js",
     "scripts": {
         "start": "electron ."
@@ -36,10 +36,6 @@
             "node_modules/**/*"
         ],
         "extraResources": [
-            {
-                "from": "google-credentials.json",
-                "to": "google-credentials.json"
-            },
             {
                 "from": "../frontend",
                 "to": "frontend"
