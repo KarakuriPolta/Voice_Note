@@ -12,9 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const languageSelect = document.getElementById('language');
     const microphoneSelect = document.getElementById('microphone');
     const audioLevelDiv = document.getElementById('audioLevel');
-    const apiSelect = document.getElementById('apiSelect');
     const apiDescription = document.getElementById('apiDescription');
     const summaryInstructionArea = document.getElementById('summaryInstructionArea');
+    const serviceAccountJsonInput = document.getElementById('serviceAccountJson');
+    const jsonUploadStatus = document.getElementById('jsonUploadStatus');
+
+    const transcriptCopyButton = document.getElementById('transcriptCopy');
+    const summaryCopyButton = document.getElementById('summaryCopy');
 
     let audioContext;
     let analyser;
@@ -28,29 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket;
     let transcribedBuffer = '';
     let resetted = false;
-    let selectedApi = localStorage.getItem('selectedApi') || 'webkitSpeechRecognition';
     let summarizeInstrustion = localStorage.getItem('summarizeInstrustion') || '';
 
     let interimTranscript = '';
     let finalTranscript = '';
 
     audioLevelDiv.style.setProperty('--level-width', '0');
-
-    function setDisabledByTeanscriptAPI(transAPI){
-        if(transAPI === 'webkitSpeechRecognition') {
-            languageSelect.disabled = false;
-            microphoneSelect.disabled = true;
-            apiDescription.textContent = `ブラウザー上で無料で使用できる webkitSpeechRecognition API を使用して音声認識を行います。利用できるブラウザーが限られる、端末の既定のマイクしか使用できない、音声認識の精度が低いなどの制約があります。`;
-        }else if(transAPI === 'GoogleCloudSpeechToText') {
-            languageSelect.disabled = true;
-            microphoneSelect.disabled = false;
-            apiDescription.textContent = `Google Cloud Speech-to-Text API を使用して音声認識を行います。Google Cloud Platform のプロジェクトが必要で、一定以上の利用で課金が発生します。音声認識の精度が高いうえ、マイクをブラウザ上で選択できます。`;
-        }
-    }
-
-    apiSelect.addEventListener('change', () => {
-        setDisabledByTeanscriptAPI(apiSelect.value);
-    });
 
     async function populateMicrophoneList() {
         try {
@@ -141,8 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsButton.addEventListener('click', () => {
         settingsModal.style.display = 'flex';
         populateMicrophoneList();
-        apiSelect.value = selectedApi;
-        setDisabledByTeanscriptAPI(selectedApi);
     });
 
     closeButton.addEventListener('click', () => {
@@ -156,12 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     saveSettingsButton.addEventListener('click', () => {
-        const language = languageSelect.value;
         selectedMicrophoneId = microphoneSelect.value;
         localStorage.setItem('selectedMicrophoneId', selectedMicrophoneId);
-
-        selectedApi = apiSelect.value;
-        localStorage.setItem('selectedApi', selectedApi);
 
         summarizeInstrustion = summaryInstructionArea.value;
         localStorage.setItem('summarizeInstrustion', summarizeInstrustion);
@@ -171,155 +152,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startButton.addEventListener('click', async () => {
-        const selectedApi = apiSelect.value;
         const constraints = {
             audio: selectedMicrophoneId ? { deviceId: { exact: selectedMicrophoneId } } : true,
             video: false
         };
-        if (selectedApi === 'webkitSpeechRecognition') {
-            if ('webkitSpeechRecognition' in window) {
-                recognition = new webkitSpeechRecognition();
-                recognition.lang = languageSelect.value;
-                recognition.continuous = true;
-                recognition.interimResults = true;
-    
-                transcribedText = '';
-                transcriptionArea.textContent = '';
-                summaryArea.textContent = '';
-                statusMessage.textContent = '録音中...';
-                startButton.disabled = true;
-                stopButton.disabled = false;
-                summarizeButton.disabled = true;
-
-                recognition.onresult = (event) => {
-                    interimTranscript = '';
-                    finalTranscript = '';
-
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript;
-                        } else {
-                            interimTranscript += event.results[i][0].transcript;
-                        }
-                    }
-
-                    transcriptionArea.textContent = transcribedText + finalTranscript + interimTranscript;
-                    if (finalTranscript) {
-                        transcribedText += finalTranscript + '\n';
-                    }
-                };
-
-                recognition.onerror = (event) => {
-                    console.error('音声認識エラー:', event.error);
-                    statusMessage.textContent = '音声認識エラーが発生しました: ' + event.error;
-                    startButton.disabled = false;
-                    stopButton.disabled = true;
-                    summarizeButton.disabled = true;
-                };
-
-                recognition.onend = () => {
-                    statusMessage.textContent = '録音終了';
-                    startButton.disabled = false;
-                    stopButton.disabled = true;
-                    summarizeButton.disabled = false;
-                    if (microphoneStream) {
-                        microphoneStream.getTracks().forEach(track => track.stop());
-                        microphoneStream = null;
-                    }
-                    if (audioContext) {
-                        audioContext.close();
-                        audioContext = null;
-                        analyser = null;
-                    }
-                    if (audioLevelDiv) {
-                        audioLevelDiv.style.setProperty('--level-width', '0');
-                    }
-                };
-    
-                navigator.mediaDevices.getUserMedia(constraints)
-                    .then(stream => {
-                        if (!microphoneListPopulated) {
-                            populateMicrophoneList();
-                        }
-                        recognition.start();
-                        startMicrophone(selectedMicrophoneId);
-                    })
-                    .catch(error => {
-                        console.error('マイクへのアクセスエラー:', error);
-                        statusMessage.textContent = 'マイクへのアクセスが拒否されました。設定で許可されているか確認してください。';
-                        startButton.disabled = false;
-                        stopButton.disabled = true;
-                        summarizeButton.disabled = true;
-                    });
-            } else {
-                statusMessage.textContent = 'このブラウザは音声認識に対応していません。';
-            }
-        } else if (selectedApi === 'GoogleCloudSpeechToText') {
-            recordedChunks = [];
-            await startMicrophone(selectedMicrophoneId);
-            resetted = false;
-            socket = new WebSocket('ws://localhost:3001');
-            socket.onopen = () => {
-                mediaRecorder.start(100); // 100msごとにデータを送信
-                statusMessage.textContent = '録音中...';
-                startButton.disabled = true;
-                stopButton.disabled = false;
-                summarizeButton.disabled = true;
-            };
-            socket.onmessage = (event) => {
-                console.log('WebSocketメッセージ:', event.data);
-                const data = JSON.parse(event.data);
-                if(data.reset){
-                    resetted = true;
-                    transcribedBuffer += transcribedText + '\n';
-                    transcriptionArea.textContent = transcribedBuffer;
-                }else if (data.transcript) {
-                    // リセット後に全く同じ内容で送られることがある。その場合は無視する
-                    if(transcribedText !== data.transcript){
-                        resetted = false;
-                        transcriptionArea.textContent = transcribedBuffer + data.transcript;
-                        transcribedText = data.transcript;
-                    }
+        recordedChunks = [];
+        await startMicrophone(selectedMicrophoneId);
+        resetted = false;
+        transcribedBuffer = transcriptionArea.value;
+        socket = new WebSocket('ws://localhost:3001');
+        socket.onopen = () => {
+            mediaRecorder.start(100); // 100msごとにデータを送信
+            statusMessage.textContent = '録音中...';
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        };
+        socket.onmessage = (event) => {
+            console.log('WebSocketメッセージ:', event.data);
+            const data = JSON.parse(event.data);
+            if(data.reset){
+                resetted = true;
+                transcribedBuffer += transcribedText + '\n';
+                transcriptionArea.value = transcribedBuffer.trim();
+            }else if (data.transcript) {
+                // リセット後に全く同じ内容で送られることがある。その場合は無視する
+                if(transcribedText !== data.transcript){
+                    resetted = false;
+                    transcriptionArea.value = (transcribedBuffer + data.transcript).trim();
+                    transcribedText = data.transcript;
                 }
-            };
-            socket.onerror = (error) => {
-                console.error('WebSocketエラー:', error);
-                statusMessage.textContent = 'WebSocketエラーが発生しました。';
-            };
-            socket.onclose = () => {
-                statusMessage.textContent = 'WebSocket接続が閉じられました。';
-            };
-        }
+            }
+            summarizeButton.disabled = (transcriptionArea.value.trim() === '');
+        };
+        socket.onerror = (error) => {resetted
+            console.error('WebSocketエラー:', error);
+            statusMessage.textContent = 'WebSocketエラーが発生しました。';
+        };
+        socket.onclose = () => {
+            statusMessage.textContent = 'WebSocket接続が閉じられました。';
+        };
     });
     stopButton.addEventListener('click', () => {
-        const selectedApi = apiSelect.value;
-        if (selectedApi === 'webkitSpeechRecognition') {
-            if (recognition) {
-                recognition.stop();
-            }
-            if(interimTranscript){
-                finalTranscript += interimTranscript;
-                interimTranscript = '';
-            }
-            if(finalTranscript){
-                transcribedText += finalTranscript + '\n';
-                transcribedBuffer += transcribedText;
-                finalTranscript = '';
-                transcriptionArea.textContent = transcribedBuffer;
-            }
-        } else if (selectedApi === 'GoogleCloudSpeechToText') {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.close();
-            }
-            // 無音によるテキストリセットが入っていない場合、残っているtranscribedTextはBufferに書き込まれていないので、ここで書き込む
-            if(transcribedText && !resetted){
-                transcribedBuffer += transcribedText + '\n';
-                transcribedText = '';
-                transcriptionArea.textContent = transcribedBuffer;
-            }
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.close();
+        }
+        // 無音によるテキストリセットが入っていない場合、残っているtranscribedTextはBufferに書き込まれていないので、ここで書き込む
+        if(transcribedText && !resetted){
+            transcribedBuffer += transcribedText + '\n';
+            transcribedText = '';
+            transcriptionArea.value = transcribedBuffer;
         }
         // マイクの受取を停止
         if (microphoneStream) {
@@ -337,14 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = '録音終了';
         startButton.disabled = false;
         stopButton.disabled = true;
-        summarizeButton.disabled = false;
     });
 
     summarizeButton.addEventListener('click', async () => {
+        transcribedBuffer = transcriptionArea.value;
         if (transcribedBuffer) {
             statusMessage.textContent = '要約処理中...';
             try {
-                let body = { transcript: transcribedBuffer };
+                let body = { transcript: transcriptionArea.value };
                 if(summarizeInstrustion && summarizeInstrustion !== ''){
                     body.instruction = summarizeInstrustion;
                 }
@@ -357,20 +241,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (data.summary) {
-                    summaryArea.textContent = data.summary;
+                    summaryArea.value = data.summary;
                     statusMessage.textContent = '要約完了';
                 } else if (data.error) {
-                    summaryArea.textContent = '要約に失敗しました: ' + data.error;
+                    summaryArea.value = '要約に失敗しました: ' + data.error;
                     statusMessage.textContent = '要約エラー';
                 }
             } catch (error) {
                 console.error('要約APIエラー:', error);
-                summaryArea.textContent = '要約に失敗しました。';
+                summaryArea.value = '要約に失敗しました。';
                 statusMessage.textContent = '要約エラー';
             }
         } else {
-            summaryArea.textContent = '文字起こしテキストがありません。';
+            summaryArea.value = '文字起こしテキストがありません。';
             statusMessage.textContent = '要約エラー';
+        }
+    });
+
+    let uploadedServiceAccountJson = null;
+
+    serviceAccountJsonInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.type !== "application/json" && !file.name.endsWith('.json')) {
+            jsonUploadStatus.textContent = 'JSONファイルのみアップロード可能';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const json = JSON.parse(e.target.result);
+                uploadedServiceAccountJson = e.target.result;
+                // 通常Web
+                const res = await fetch('/api/upload-credentials', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: uploadedServiceAccountJson
+                });
+                if (res.ok) {
+                    jsonUploadStatus.textContent = 'アップロード完了';
+                } else {
+                    jsonUploadStatus.textContent = 'アップロード失敗';
+                }
+            } catch (err) {
+                jsonUploadStatus.textContent = 'JSONのパースに失敗';
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    transcriptionArea.addEventListener('change', () => {
+            summarizeButton.disabled = (transcriptionArea.value.trim() === '');
+    });
+
+    // コピーボタンの処理
+    transcriptCopyButton.addEventListener('click', () => {
+        if (transcriptionArea.value) {
+            navigator.clipboard.writeText(transcriptionArea.value)
+                .then(() => {
+                    statusMessage.textContent = '文字起こし文をコピーしました。';
+                })
+                .catch(() => {
+                    statusMessage.textContent = 'コピーに失敗しました。';
+                });
+        } else {
+            statusMessage.textContent = '文字起こし文が空です。';
+        }
+    });
+
+    summaryCopyButton.addEventListener('click', () => {
+        if (summaryArea.value) {
+            navigator.clipboard.writeText(summaryArea.value)
+                .then(() => {
+                    statusMessage.textContent = '要約文をコピーしました。';
+                })
+                .catch(() => {
+                    statusMessage.textContent = 'コピーに失敗。';
+                });
+        } else {
+            statusMessage.textContent = '要約文が空です。';
         }
     });
 

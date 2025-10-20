@@ -10,25 +10,31 @@
     <div class="container">
         <header>
             <h1>Call Assistant</h1>
+            <button class="iconbtn" id="settingsButton" title="設定"><img src="img/settings.svg" alt="設定"></button>
         </header>
         <main>
             <div class="transcription-area">
-                <h2>文字起こし</h2>
-                <div id="transcriptionArea" class="transcript"></div>
-            </div>
-            <div class="controls">
-                <button id="startButton">通話開始</button>
-                <button id="stopButton" disabled>通話終了</button>
-                <button id="summarizeButton" disabled>要約</button>
-                <button id="settingsButton">設定</button>
+                <h2>文字起こし
+                    <button class="iconbtn" id="startButton" title="録音開始"><img src="img/play.svg" alt="録音開始"></button>
+                    <button class="iconbtn" id="stopButton" title="録音停止" disabled><img src="img/pause.svg" alt="録音停止"></button>
+                    <button class="iconbtn" id="transcriptCopy" title="コピー"><img src="img/copy.svg" alt="コピー"></button>
+                </h2>
+                <div class="transcript">
+                    <textarea id="transcriptionArea"></textarea>
+                </div>
             </div>
             <div class="audio-level-indicator">
                 <h2>音声レベル</h2>
                 <div id="audioLevel"></div>
             </div>
             <div class="summary-area">
-                <h2>要約</h2>
-                <div id="summaryArea" class="summary"></div>
+                <h2>要約
+                    <button class="iconbtn" id="summarizeButton" disabled title="要約実行"><img src="img/play.svg" alt="要約実行"></button>
+                    <button class="iconbtn" id="summaryCopy" title="コピー"><img src="img/copy.svg" alt="コピー"></button>
+                </h2>
+                <div class="summary">
+                    <textarea id="summaryArea"></textarea>
+                </div>
             </div>
             <div class="status">
                 <p id="statusMessage">準備完了</p>
@@ -40,19 +46,9 @@
                 <h2>設定</h2>
                 <div class="settings-form">
                     <div>
-                        <label for="apiSelect">文字起こしAPI選択:</label>
-                        <select id="apiSelect">
-                            <option value="webkitSpeechRecognition">webkitSpeechRecognition</option>
-                            <option value="GoogleCloudSpeechToText">Google Cloud Speech-to-Text</option>
-                        </select>
-                        <p id="apiDescription">ブラウザー上で無料で使用できる webkitSpeechRecognition API を使用して音声認識を行います。利用できるブラウザーが限られる、端末の既定のマイクしか使用できない、音声認識の精度が低いなどの制約があります。</p>
-                    </div>
-                    <div>
-                        <label for="language">言語:</label>
-                        <select id="language">
-                            <option value="ja-JP">日本語</option>
-                            <option value="en-US">英語</option>
-                        </select>
+                        <label for="summaryInstructionArea">要約の追加指示:</label>
+                        <textarea id="summaryInstructionArea" rows="4" cols="50" placeholder="要約時に追加の指定を行うことができます。要約のスタイルの指示の上書きや、情報の指示などを実行できます。
+例：「箇条書きでなく、500字程度の平文で要約すること。」「時系列順でなく、内容で分類して見出しをつけながら要約する。」「〇〇は□□である。」など"></textarea>
                     </div>
                     <div>
                         <label for="microphone">マイク:</label>
@@ -61,9 +57,16 @@
                         </select>
                     </div>
                     <div>
-                        <label for="summaryInstructionArea">要約の追加指示:</label>
-                        <textarea id="summaryInstructionArea" rows="4" cols="50" placeholder="要約時に追加の指定を行うことができます。要約のスタイルの指示の上書きや、情報の指示などを実行できます。
-例：「箇条書きでなく、500字程度の平文で要約すること。」「時系列順でなく、内容で分類して見出しをつけながら要約する。」「〇〇は□□である。」など"></textarea>
+                        <label for="serviceAccountJson">サービスアカウント認証JSON:</label>
+                        <input type="file" id="serviceAccountJson" accept=".json">
+                        <span id="jsonUploadStatus"></span>
+                    </div>
+                    <div>
+                        <p id="apiDescription">
+                            Google Cloud Speech-to-Text API を使用して音声認識を行い、Google Cloud Vertex AI APIを経由したGoogle Geminiで要約を行います。<br>
+                            Google Cloud Platform のプロジェクトとサービスアカウントが必要で、一定以上の利用で課金が発生します。<br>
+                            <a href="http://localhost:3000/setup.html" target="_blank" >セットアップ方法の詳細はこちら。</a>
+                        </p>
                     </div>
                     <button id="saveSettings">保存</button>
                 </div>
