@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Electron環境ならバージョンを取得して表示
+    if (window.api && typeof window.api.getAppVersion === 'function') {
+        window.api.getAppVersion().then(version => {
+            const verElem = document.getElementById('appVersion');
+            if (verElem && version) verElem.textContent = 'v' + version;
+        });
+    }
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     const summarizeButton = document.getElementById('summarizeButton');
