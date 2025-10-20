@@ -10,25 +10,31 @@
     <div class="container">
         <header>
             <h1>Call Assistant</h1>
+            <button class="iconbtn" id="settingsButton" title="設定"><img src="img/settings.svg" alt="設定"></button>
         </header>
         <main>
             <div class="transcription-area">
-                <h2>文字起こし</h2>
-                <div id="transcriptionArea" class="transcript"></div>
-            </div>
-            <div class="controls">
-                <button id="startButton">通話開始</button>
-                <button id="stopButton" disabled>通話終了</button>
-                <button id="summarizeButton" disabled>要約</button>
-                <button id="settingsButton">設定</button>
+                <h2>文字起こし
+                    <button class="iconbtn" id="startButton" title="録音開始"><img src="img/play.svg" alt="録音開始"></button>
+                    <button class="iconbtn" id="stopButton" title="録音停止" disabled><img src="img/pause.svg" alt="録音停止"></button>
+                    <button class="iconbtn" id="transcriptCopy" title="コピー"><img src="img/copy.svg" alt="コピー"></button>
+                </h2>
+                <div class="transcript">
+                    <textarea id="transcriptionArea"></textarea>
+                </div>
             </div>
             <div class="audio-level-indicator">
                 <h2>音声レベル</h2>
                 <div id="audioLevel"></div>
             </div>
             <div class="summary-area">
-                <h2>要約</h2>
-                <div id="summaryArea" class="summary"></div>
+                <h2>要約
+                    <button class="iconbtn" id="summarizeButton" disabled title="要約実行"><img src="img/play.svg" alt="要約実行"></button>
+                    <button class="iconbtn" id="summaryCopy" title="コピー"><img src="img/copy.svg" alt="コピー"></button>
+                </h2>
+                <div class="summary">
+                    <textarea id="summaryArea"></textarea>
+                </div>
             </div>
             <div class="status">
                 <p id="statusMessage">準備完了</p>

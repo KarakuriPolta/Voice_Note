@@ -32,10 +32,6 @@ main {
     background-color: #f9f9f9;
 }
 
-.transcript, .summary {
-    white-space: pre-wrap;
-}
-
 .controls {
     display: flex;
     gap: 10px;
@@ -161,5 +157,51 @@ main {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    resize: vertical; /* 縦方向のリサイズを許可 */
+    field-sizing: content; /* コンテンツのサイズに合わせて調整。Electronなので互換性問題は無視して良い */
+    resize: none; /* リサイズは自動のみ */
+}
+
+#summaryArea, #transcriptionArea {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: large;
+    line-height: 1.5em;
+    box-sizing: border-box;
+    field-sizing: content; /* コンテンツのサイズに合わせて調整。Electronなので互換性問題は無視して良い */
+    resize: none; /* リサイズは自動のみ */
+    transition: all 0.2s ease;
+}
+
+#summaryArea:focus, #transcriptionArea:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.iconbtn{
+    background-color: transparent;
+    border: none;
+    height:1.2em;
+    width:auto;
+    padding: 0;
+    margin: 0 0.1em;
+    font-size: inherit;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.iconbtn:disabled{
+    filter:opacity(0.5);
+    cursor: not-allowed;
+}
+
+.iconbtn img{
+    width: auto;
+    height: 100%;
+    vertical-align: middle;
+    transition: all 0.1s ease;
 }
