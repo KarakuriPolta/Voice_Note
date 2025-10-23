@@ -14,7 +14,7 @@ let mainWindow;
 async function checkForUpdates() {
     try {
         const res = await axios.get(
-            "https://api.github.com/repos/KarakuriPolta/Call_Assistant/releases/latest",
+            "https://api.github.com/repos/KarakuriPolta/Voice_Note/releases/latest",
             { headers: { 'Accept': 'application/vnd.github+json' } }
         );
         const latest = res.data.tag_name || res.data.name;
