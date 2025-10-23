@@ -1,7 +1,7 @@
 {
-    "name": "call-assistant-backend",
+    "name": "voice-note-backend",
     "version": "1.0.0",
-    "description": "Call Assistant (Electron版) バックエンド・Electron本体",
+    "description": "Voice Note (Electron版) バックエンド・Electron本体",
     "main": "index.js",
     "scripts": {
         "start": "electron ."
@@ -24,8 +24,8 @@
         "electron-builder": "^26.0.12"
     },
     "build": {
-        "appId": "com.poltergeist-lab.call-assistant",
-        "productName": "Call Assistant",
+        "appId": "com.poltergeist-lab.voice-note",
+    "productName": "Voice Note",
         "directories": {
             "output": "dist"
         },

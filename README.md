@@ -1,8 +1,8 @@
 
-# Call Assistant (Electron版)
+
+# Voice Note (Electron版)
 
 通話内容の文字起こし・要約を支援するデスクトップアプリ（Electron製）
-
 ---
 
 ## 機能概要
@@ -39,7 +39,7 @@
 npx electron-builder
 ```
 
-`dist/` フォルダに `Call Assistant Setup.exe` などのインストーラが生成される。
+`dist/` フォルダに `Voice Note Setup.exe` などのインストーラが生成される。
 
 ---
 
