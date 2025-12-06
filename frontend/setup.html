@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container setup">
         <header>
             <h1>Voice Note - セットアップ方法</h1>
         </header>
@@ -30,11 +30,13 @@
                     <li>右上の「新しいプロジェクト」をクリックします。<br>
                         <img src="img/2-2.png" alt="新しいプロジェクト"></li>
                     <li>「Voice-note」など任意の名称を設定し作成を押します。<br>
+                        （注: 以降の画像ではCall-Assistantとなっています）<br>
                         <img src="img/2-3.png" alt="プロジェクト作成"></li>
                     <li>再び「プロジェクトを選択」を押し、先ほど作成したプロジェクトを選択します。<br>
                         <img src="img/2-4.png" alt="プロジェクト選択"></li>
                     <li>左上のボタンが先程作成したプロジェクト名になっていれば選択できています。<br>
                         <img src="img/2-5.png" alt="プロジェクト選択確認"></li>
+                    <li>二要素認証の有効化を求められた場合、指示に従ってGoogleアカウントの設定を行ってください。</li>
                 </ul>
             </li>
             <li>APIの有効化
@@ -42,7 +44,11 @@
                     <li>画面上部の検索バーに「Speech-to-Text」と入れて検索し、「Cloud Speech-to-Text API」をクリックします。 ※Cloud Text-to-Speech APIではありません。<br>
                         <img src="img/3-1.png" alt="S2T検索"></li>
                     <li>「有効にする」を押します。<br>
-                        <img src="img/3-2.png" alt="S2T有効化"></li>
+                        <img src="img/3-2.png" alt="S2T有効化">
+                        <ul>
+                            <li>「課金が必要」と表示された場合、指示に従って請求先アカウントを作成してください。その後、再度Cloud Speech-to-Text APIを有効化してください。</li>
+                        </ul>
+                    </li>
                     <li>同様に、「Gemini」「Vertex AI」で検索し、「Gemini API」「Vertex AI API」を有効化します。<br>
                         <img src="img/3-3.png" alt="Gemini検索"><br>
                         <img src="img/3-4.png" alt="Gemini有効化"><br>
@@ -84,9 +90,15 @@
                         <img src="img/5-4.png" alt="JSONを選択"></li>
                 </ul>
             </li>
-            <li>ダウンロードした JSON ファイルを指定の場所に配置する
+            <li>JSONファイルを自動で配置
                 <ul>
-                    <li>Voice Note.exeが存在するフォルダを開き、resourcesフォルダを開いてください。</li>
+                    <li>Voice Noteアプリに戻り、ファイルを選択から先程ダウンロードしたJSONファイルを選択してください。</li>
+                    <li>選択すると自動で必要な場所に配置されるので、リロードボタンを押せば使用可能になります。</li>
+                </ul>
+            </li>
+            <li>うまく行かない場合: 手動でJSONファイルを設置
+                <ul>
+                    <li>このアプリケーション（Voice Note.exe）が存在するフォルダを開き、resourcesフォルダを開いてください。</li>
                     <li>先ほどダウンロードした鍵のJSONファイルを、「google-credentials.json」という名前で移動してください。</li>
                 </ul>
             </li>
