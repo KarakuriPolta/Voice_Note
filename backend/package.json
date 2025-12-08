@@ -1,6 +1,6 @@
 {
     "name": "voice-note-backend",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Voice Note (Electron版) バックエンド・Electron本体",
     "main": "index.js",
     "scripts": {
