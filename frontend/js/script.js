@@ -235,7 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (transcribedBuffer) {
             statusMessage.textContent = '要約処理中...';
             try {
-                let body = { transcript: transcriptionArea.value };
+                const highAccuracyMode = document.getElementById('highAccuracyMode').checked;
+                let body = { transcript: transcriptionArea.value, highAccuracy: highAccuracyMode };
                 if(summarizeInstrustion && summarizeInstrustion !== ''){
                     body.instruction = summarizeInstrustion;
                 }

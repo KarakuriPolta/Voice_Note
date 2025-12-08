@@ -91,9 +91,13 @@ function getVertexAIClient() {
 app.post('/api/summarize', async (req, res) => {
     const transcript = req.body.transcript;
     const instruction = req.body.instruction;
+    const highAccuracy = req.body.highAccuracy || false;
     console.log('Gemini 要約リクエストを受信:', transcript);
     if(instruction){
         console.log('追加の指定:', instruction);
+    }
+    if(highAccuracy){
+        console.log('高精度モード: 有効');
     }
 
     if (!transcript) {
@@ -110,8 +114,10 @@ app.post('/api/summarize', async (req, res) => {
         let vertexAI, generativeModel;
         try {
             vertexAI = getVertexAIClient();
+            const modelName = highAccuracy ? 'gemini-2.5-pro' : 'gemini-2.5-flash-lite';
+            console.log('使用モデル:', modelName);
             generativeModel = vertexAI.getGenerativeModel({
-                model: 'gemini-2.5-flash-lite',
+                model: modelName,
                 systemInstruction: {
                     parts: [
                         {text: prompt}
