@@ -80,8 +80,11 @@ main {
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
+    max-height: 90vh; /* 画面の高さの90%まで */
     border-radius: 8px;
     position: relative;
+    overflow-y: auto; /* 縦方向にスクロール可能 */
+    box-sizing: border-box;
 }
 
 .close-button {
