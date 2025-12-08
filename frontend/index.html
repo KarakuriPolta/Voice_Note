@@ -32,6 +32,10 @@
                 <h2>要約
                     <button class="iconbtn" id="summarizeButton" disabled title="要約実行"><img src="img/play.svg" alt="要約実行"></button>
                     <button class="iconbtn" id="summaryCopy" title="コピー"><img src="img/copy.svg" alt="コピー"></button>
+                    <label class="high-accuracy-label">
+                        <input type="checkbox" id="highAccuracyMode" class="high-accuracy-checkbox">
+                        高精度モード (料金増加)
+                    </label>
                 </h2>
                 <div class="summary">
                     <textarea id="summaryArea"></textarea>
@@ -66,6 +70,9 @@
                         <p id="apiDescription">
                             Google Cloud Speech-to-Text API を使用して音声認識を行い、Google Cloud Vertex AI APIを経由したGoogle Geminiで要約を行います。<br>
                             Google Cloud Platform のプロジェクトとサービスアカウントが必要で、一定以上の利用で課金が発生します。<br>
+                            [約100万字あたりの料金]<br>
+                            入力: $0.30、出力: $2.5 (Gemini 2.5 Flash Lite)<br>
+                            高精度モード: 入力: $1.25、出力: $10 (Gemini 2.5 Pro)<br>
                             <a href="http://localhost:3000/setup.html" target="_blank" >セットアップ方法の詳細はこちら。</a>
                         </p>
                     </div>
